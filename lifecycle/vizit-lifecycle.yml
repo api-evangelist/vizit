@@ -1,0 +1,68 @@
+generated: '2026-08-02'
+method: searched
+source: https://docs.vizit.com/, https://status.vizit.com/
+versioning:
+  scheme: uri-path
+  current: v1
+  path_prefix: /v1
+  unversioned_paths:
+  - /auth/token
+  docs: https://docs.vizit.com/api
+  forward_looking:
+  - 'Export artifact formats: CSV in v1; JSONL and Parquet documented as deferred to v2.'
+  additive_change_policy: 'Error codes are documented as part of the /v1/* contract, with
+    new codes added over time; clients are told to branch on the code and tolerate
+    additions.'
+deprecation:
+  policy_url: null
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  notes: 'No public deprecation or sunset policy and no RFC 8594 Sunset/Deprecation header
+    support was found on the docs host as of the probe date. One retirement is documented
+    in passing in a field description (the retired mobile_readiness object, superseded by
+    the mobile_ready flag), but there is no policy page.'
+sla:
+  url: null
+  uptime_target: null
+  published: false
+status_page:
+  url: https://status.vizit.com/
+  provider: Instatus
+  components:
+  - Vizit Web App
+  - Vizit NextGen App
+  subscriptions:
+  - email
+  - Slack
+  - Microsoft Teams
+  - Google Chat
+  - webhook
+  - RSS
+  - Atom
+  - API
+  observed_state: All systems operational (2026-08-02)
+  note: The status page tracks the Vizit web applications; the Public API (ext.vizit.com)
+    is not listed as its own component.
+environments:
+- {name: production, base_url: 'https://ext.vizit.com'}
+- {name: dev1, base_url: 'https://dev1.ext.vizit.com'}
+- {name: dev2, base_url: 'https://dev2.ext.vizit.com'}
+- {name: dev3, base_url: 'https://dev3.ext.vizit.com'}
+- {name: dev4, base_url: 'https://dev4.ext.vizit.com'}
+- {name: dev5, base_url: 'https://dev5.ext.vizit.com'}
+changelog:
+  url: null
+  published: false
+  note: No dated changelog or release-notes page was found on docs.vizit.com or www.vizit.com.
+    The docs site's sitemap reports every page last modified 2026-07-30.
+deprecated_operations: []
+docs_freshness:
+  sitemap_lastmod: '2026-07-30'
+  source: https://docs.vizit.com/sitemap.xml
+x-evidence:
+  fetched: '2026-08-02'
+  urls:
+  - {url: 'https://status.vizit.com/', http_status: 200}
+  - {url: 'https://docs.vizit.com/sitemap.xml', http_status: 200}
+  - {url: 'https://docs.vizit.com/changelog', http_status: 404}

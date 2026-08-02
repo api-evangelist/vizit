@@ -1,0 +1,57 @@
+generated: '2026-08-02'
+method: searched
+source: https://docs.vizit.com/standards/authentication
+docs: https://docs.vizit.com/standards/authentication
+description: 'Vizit separates test and live access by environment host rather than by key
+  prefix. Five development environments (dev1-dev5) sit alongside production, and
+  credentials are environment-specific. No public self-service sandbox, no shared test
+  credentials and no magic test values are published — Vizit provisions credentials per
+  organization and per environment during onboarding.'
+model: environment-separated
+self_service: false
+key_prefixes: []
+key_prefix_note: Credentials are opaque Auth0 machine-to-machine client_id / client_secret
+  pairs with no documented test/live prefix convention.
+environments:
+- name: production
+  base_url: https://ext.vizit.com
+  audience: https://ext.vizit.com
+  credentials: production only
+- name: dev1
+  base_url: https://dev1.ext.vizit.com
+  audience: https://ext.vizit.com
+  credentials: dev1 only
+- name: dev2
+  base_url: https://dev2.ext.vizit.com
+  audience: https://ext.vizit.com
+  credentials: dev2 only
+- name: dev3
+  base_url: https://dev3.ext.vizit.com
+  audience: https://ext.vizit.com
+  credentials: dev3 only
+- name: dev4
+  base_url: https://dev4.ext.vizit.com
+  audience: https://ext.vizit.com
+  credentials: dev4 only
+- name: dev5
+  base_url: https://dev5.ext.vizit.com
+  audience: https://ext.vizit.com
+  credentials: dev5 only
+rules:
+- Credentials are environment-specific — use production credentials only against production
+  and dev1 credentials only against dev1.
+- The API audience remains https://ext.vizit.com across every environment.
+test_values: []
+test_values_note: No test ASINs, test image URLs, test category UUIDs or fixture/trigger
+  tooling are published. Integrators exercise the API against a dev environment with real
+  Amazon ASINs and their own publicly reachable image URLs.
+test_clocks: false
+console: null
+console_note: 'No interactive API console is exposed: /docs and /redoc on both api.vizit.com
+  and ext.vizit.com return an authentication challenge rather than a try-it surface.'
+x-evidence:
+  fetched: '2026-08-02'
+  urls:
+  - {url: 'https://docs.vizit.com/standards/authentication', http_status: 200}
+  - {url: 'https://ext.vizit.com/docs', http_status: 403}
+  - {url: 'https://api.vizit.com/docs', http_status: 401}

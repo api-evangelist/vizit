@@ -1,0 +1,113 @@
+generated: '2026-08-02'
+method: searched
+source: https://docs.vizit.com/standards/authentication, https://docs.vizit.com/standards/errors,
+  https://docs.vizit.com/standards/pagination, https://docs.vizit.com/api
+description: Cross-cutting standards conformance for the Vizit Public API, asserted from
+  the provider's published Standards pages and operation reference. No downloadable
+  OpenAPI document is served, so nothing below is derived from a parsed spec.
+standards:
+- id: oauth2
+  conforms: true
+  evidence: 'OAuth 2.0 client credentials grant documented at POST /auth/token (RFC 6749
+    §4.4), with Auth0 as the authorization server, an audience parameter and an
+    organization parameter.'
+  source: https://docs.vizit.com/standards/authentication
+- id: oauth2-client-credentials
+  conforms: true
+  evidence: grant_type must be client_credentials; token response returns access_token,
+    token_type and expires_in.
+  source: https://docs.vizit.com/api/authentication/createToken
+- id: rfc6750-bearer-token
+  conforms: true
+  evidence: 'Protected /v1/** endpoints require Authorization: Bearer <access_token>.'
+  source: https://docs.vizit.com/standards/authentication
+- id: oidc
+  conforms: false
+  evidence: Machine-to-machine only; no OIDC discovery document, no id_token, no user
+    authentication flow published.
+- id: oauth2-scopes
+  conforms: false
+  evidence: No scope surface is published. Authorization is organization-scoped by the
+    token (plus an ICP check on categories), not scope-scoped.
+- id: rfc8414-oauth-authorization-server-metadata
+  conforms: false
+  evidence: /.well-known/oauth-authorization-server is not served on any Vizit host.
+- id: rfc9728-oauth-protected-resource-metadata
+  conforms: false
+  evidence: /.well-known/oauth-protected-resource is not served on any Vizit host.
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: Errors are a flat proprietary JSON object served as application/json, not
+    application/problem+json. Vizit does publish stable SCREAMING_SNAKE_CASE machine-readable
+    error codes and tells clients to branch on the code rather than the message.
+  source: https://docs.vizit.com/standards/errors
+- id: cursor-pagination
+  conforms: true
+  evidence: 'Cursor-based pagination documented as the API-wide standard: limit (default
+    25, max 100) and an opaque cursor, with data / has_more / next_cursor in the response.'
+  source: https://docs.vizit.com/standards/pagination
+- id: idempotency
+  conforms: true
+  evidence: 'Idempotency is documented per operation and keyed on the natural resource
+    identifier rather than an Idempotency-Key header: PUT upserts are no-ops when nothing
+    changed, and Spark create calls reuse an in-flight record keyed on image_id (200 for
+    reuse, 202 for a fresh create).'
+  source: conventions/vizit-conventions.yml
+- id: rfc7807-idempotency-key-header
+  conforms: false
+  evidence: No Idempotency-Key request header is published.
+- id: request-id-correlation
+  conforms: true
+  evidence: X-Request-Id is accepted on the request and always returned on the response;
+    the same ULID appears as request_id in error bodies.
+  source: https://docs.vizit.com/standards/errors
+- id: rfc6585-429-retry-after
+  conforms: true
+  evidence: 429 Too Many Requests is returned with a Retry-After header on rate-limit
+    rejections, and sometimes on 503.
+  source: https://docs.vizit.com/standards/errors
+- id: rfc8594-sunset-header
+  conforms: false
+  evidence: No Sunset or Deprecation header support and no deprecation policy published.
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: No /.well-known/security.txt on any Vizit host.
+  source: well-known/vizit-well-known.yml
+- id: openapi
+  conforms: partial
+  evidence: 'The documentation site states the API reference is generated from the Vizit
+    Public API OpenAPI specification, and the rendered reference exposes operationIds,
+    parameters, request bodies and response schemas — but no OpenAPI document is
+    downloadable from any host. /openapi.json, /openapi.yaml, /swagger.json and /docs are
+    auth-gated on both api.vizit.com (401) and ext.vizit.com (403), and 404 on
+    docs.vizit.com.'
+  source: https://docs.vizit.com/
+- id: asyncapi
+  conforms: false
+  evidence: No event, streaming or webhook surface is shipped. Webhook integration patterns
+    are listed as a queued documentation topic, not a released capability.
+- id: mcp
+  conforms: false
+  evidence: No hosted or remote Model Context Protocol server was found in the docs, on
+    npm, or in the MCP registries.
+- id: a2a
+  conforms: false
+  evidence: No A2A agent card at /.well-known/agent-card.json or /.well-known/agent.json on
+    any host.
+- id: llms-txt
+  conforms: true
+  evidence: docs.vizit.com serves both /llms.txt and /llms-full.txt.
+  source: llms/vizit-llms.txt
+- id: gs1-product-image-specification
+  conforms: partial
+  evidence: 'Image scoring exposes GS1-aligned hero sub-scores under hero_gs1_components
+    and hero_gs1_group_statuses — the four Ws (brand, product type, variant, size and
+    count) plus image-quality, composition and staging components. This is a domain
+    alignment with the GS1 product image specification, published by Vizit as its scoring
+    model rather than a certified conformance claim.'
+  source: https://docs.vizit.com/api/images/scoreImage
+compliance_certifications: []
+compliance_note: No trust center, compliance page or named certification (SOC 2, ISO 27001,
+  PCI DSS, HIPAA, FedRAMP) was found on vizit.com, trust.vizit.com or security.vizit.com.
+x-evidence:
+  fetched: '2026-08-02'

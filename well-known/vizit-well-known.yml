@@ -1,0 +1,51 @@
+generated: '2026-08-02'
+method: probed
+source: live HTTP probes
+found: 0
+summary: 'No /.well-known/ discovery documents are served on any Vizit host. The API hosts
+  (api.vizit.com, ext.vizit.com) return a blanket authentication challenge for every path
+  including /.well-known/*, so absence there is an auth wall rather than a 404; the docs
+  and marketing hosts return a genuine 404. No security.txt, no OIDC/OAuth discovery
+  document, no API catalog, no ai-plugin.json, and no A2A agent card were found.'
+hosts:
+- host: https://api.vizit.com
+  note: FastAPI/uvicorn service; every path returns 401 {"detail":"Not authenticated"}
+    except the root, which returns {"message":"OK"}.
+  documents:
+  - {path: /.well-known/security.txt, status: 401}
+  - {path: /.well-known/openid-configuration, status: 401}
+  - {path: /.well-known/oauth-authorization-server, status: 401}
+  - {path: /.well-known/oauth-protected-resource, status: 401}
+  - {path: /.well-known/api-catalog, status: 401}
+  - {path: /.well-known/ai-plugin.json, status: 401}
+  - {path: /.well-known/agent-card.json, status: 401}
+  - {path: /.well-known/agent.json, status: 401}
+- host: https://ext.vizit.com
+  note: AWS API Gateway; every path returns 403 {"message":"Missing Authentication Token"}.
+  documents:
+  - {path: /.well-known/security.txt, status: 403}
+  - {path: /.well-known/openid-configuration, status: 403}
+  - {path: /.well-known/oauth-authorization-server, status: 403}
+  - {path: /.well-known/oauth-protected-resource, status: 403}
+  - {path: /.well-known/agent-card.json, status: 403}
+  - {path: /.well-known/agent.json, status: 403}
+- host: https://docs.vizit.com
+  note: Static docs site on GitHub Pages. Serves llms.txt and llms-full.txt but no
+    /.well-known/ surface.
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+  - {path: /llms.txt, status: 200, file: ../llms/vizit-llms.txt}
+- host: https://www.vizit.com
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+  - {path: /security.txt, status: 404}
+x-evidence:
+  fetched: '2026-08-02'

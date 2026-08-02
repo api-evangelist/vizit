@@ -1,0 +1,123 @@
+generated: '2026-08-02'
+method: searched
+source: https://docs.vizit.com/standards/authentication, https://docs.vizit.com/standards/errors,
+  https://docs.vizit.com/standards/pagination, https://docs.vizit.com/guides/ingest-a-pdp,
+  https://docs.vizit.com/guides/export-scores
+docs: https://docs.vizit.com/standards/authentication
+description: Cross-cutting request/response semantics for the Vizit Public API, transcribed
+  from the provider's published Standards and Guides pages.
+authentication:
+  style: OAuth 2.0 client credentials (Auth0) exchanged for a Bearer JWT
+  header: 'Authorization: Bearer <access_token>'
+  token_endpoint: POST /auth/token
+  token_lifetime_seconds: 86400
+  artifact: authentication/vizit-authentication.yml
+idempotency:
+  supported: true
+  model: natural-key
+  key_header: null
+  key_header_note: 'Vizit does not publish an Idempotency-Key request header. Idempotency
+    is contract-level and keyed on the resource identifier in the request, and it is
+    explicitly documented per operation.'
+  behaviors:
+  - operations: [upsertPdpById]
+    method: PUT
+    rule: 'Upsert on the caller-supplied id. If the submission changes the PDP it is
+      processed and the response is 202 with status PROCESSING; if nothing changed the PDP
+      is not reprocessed and the response is 200 with its current status. Carousel images
+      are reconciled by filename — a filename already on the PDP is reused with no
+      re-download and no re-score, a new filename replaces that slot. An identical payload
+      is a no-op.'
+  - operations: [upsertPdpByAsin]
+    method: PUT
+    rule: Upsert on the ASIN (plus region). An existing PDP is refreshed rather than
+      duplicated; a PDP already in a terminal state with nothing to do returns 200 instead
+      of 202.
+  - operations: [createSparkIdea]
+    method: POST
+    rule: 'Idempotent on image_id: while an Idea is in flight for that image, subsequent
+      calls return the existing Idea with 200 OK instead of creating a new one. A fresh
+      create returns 202 Accepted. The organization check runs before the idempotent
+      lookup, so a caller from another organization gets 404 IMAGE_NOT_FOUND rather than
+      reuse.'
+  - operations: [createSparkImagesBatch]
+    method: POST
+    rule: Idempotent on image_id with the same in-flight-reuse semantics as Spark Ideas —
+      200 for reuse, 202 for a fresh batch.
+  - operations: [createExport]
+    method: POST
+    rule: Not idempotent, but concurrency-capped — one PROCESSING export per organization.
+      A second submission returns 409 EXPORT_CONCURRENCY_LIMIT rather than queueing a
+      duplicate job.
+  status_code_convention: 200 signals an idempotent reuse or no-op; 202 signals newly
+    accepted asynchronous work.
+pagination:
+  style: cursor
+  request_parameters:
+  - {name: limit, in: query, type: integer, default: 25, maximum: 100}
+  - {name: cursor, in: query, type: string, description: Opaque cursor returned by the
+      previous page. Omit for the first page.}
+  response_fields:
+  - {field: data, type: array, description: The items in the current page.}
+  - {field: has_more, type: boolean, description: Whether another page is available.}
+  - {field: next_cursor, type: string|null, description: Cursor to pass on the next request.}
+  total_counts: false
+  guidance:
+  - Treat cursor as an opaque token; do not parse or construct it.
+  - Stop paging when has_more is false.
+  - Cursors are short-lived continuation tokens, not stable forever.
+  docs: https://docs.vizit.com/standards/pagination
+request_tracing:
+  header: X-Request-Id
+  direction: request and response
+  behavior: If the client sends X-Request-Id it is echoed back on the response; otherwise
+    Vizit generates one. The same value appears in the error body as request_id (ULID).
+  guidance: Send X-Request-Id on each request to correlate client logs with Vizit's, and
+    include it plus the UTC request time when contacting support.
+versioning:
+  scheme: uri-path
+  current: v1
+  path_prefix: /v1
+  unversioned_paths: [/auth/token]
+  note: Export artifacts are CSV in v1; JSONL and Parquet are deferred to v2.
+error_envelope:
+  format: proprietary-json (flat object, not RFC 9457)
+  branch_on: error code field
+  artifact: errors/vizit-error-codes.yml
+  docs: https://docs.vizit.com/standards/errors
+rate_limit_signaling:
+  status: 429
+  header: Retry-After
+  scope: per organization, enforced at the API gateway
+  artifact: rate-limits/vizit-rate-limits.yml
+async_model:
+  pattern: submit then poll
+  description: 'Scoring, Spark and export work is asynchronous. Writes return 202 Accepted
+    with a relative polling path (score_url, result_url, status_url) and a status of
+    PROCESSING; clients poll the GET until status reaches the terminal COMPLETED or ERROR.'
+  status_enum: [PROCESSING, COMPLETED, ERROR]
+  processing_timeout: Spark requests that stay non-terminal for more than 5 minutes are
+    reported as ERROR even when the underlying record still reads as in-flight.
+  stale_read_behavior: During a rescore or refresh the previous scores stay visible
+    alongside status PROCESSING and the prior scored_at timestamp, so clients can keep
+    showing the last known result.
+retention:
+  export_artifacts: 7 days from completion, after which the job reports error_code
+    EXPORT_EXPIRED.
+field_expansion:
+  supported: false
+metadata:
+  supported: false
+  note: Callers can attach their own correlation identifiers instead — integration_id,
+    hero_image_asset_id and carousel_image_asset_ids are echoed back on PDP submissions.
+cross_links:
+  authentication: authentication/vizit-authentication.yml
+  errors: errors/vizit-error-codes.yml
+  lifecycle: lifecycle/vizit-lifecycle.yml
+  rate_limits: rate-limits/vizit-rate-limits.yml
+  sandbox: sandbox/vizit-sandbox.yml
+x-evidence:
+  fetched: '2026-08-02'
+  urls:
+  - {url: 'https://docs.vizit.com/standards/pagination', http_status: 200}
+  - {url: 'https://docs.vizit.com/llms-full.txt', http_status: 200}

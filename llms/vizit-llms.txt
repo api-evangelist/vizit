@@ -1,0 +1,38 @@
+# Documentation
+
+
+- **Documents**
+- [Introduction](/): API reference and integration documentation for the Vizit Public API.
+- Standards
+  - [Authentication](/standards/authentication): Machine-to-machine authentication with OAuth 2.0 client credentials.
+  - [Errors](/standards/errors): Standard error response format and HTTP status codes used across the API.
+  - [Pagination](/standards/pagination): Cursor-based pagination for paginated list endpoints.
+- Guides
+  - [Overview](/guides/overview): Task-oriented walkthroughs for working with the Vizit Public API.
+  - [Ingest a PDP](/guides/ingest-a-pdp): End-to-end walkthrough for submitting Amazon ASINs or products by your own id and retrieving Vizit scores.
+  - [Export Scores](/guides/export-scores): Queue a bulk CSV export of your organization's PDP or image scores, poll until it completes, and download the artifact.
+
+- **Endpoints**
+- [Reference](/api): OpenAPI reference for the Vizit Public API, grouped by capability.
+- Authentication: Exchange client credentials for short-lived Bearer tokens used on protected endpoints.
+  - [Create a token](/api/authentication/createToken): The returned token authenticates every other call in this API.
+- Product Details: Create, update, and retrieve Product Detail Page (PDP) content for ingestion into Vizit.
+  - [List product categories](/api/product-details/listProductCategories): Lists the product categories your organization has ICP access to.
+  - [List product retailers](/api/product-details/listProductRetailers): Lists the retailer regions you can use to scope product category discovery.
+  - [Retrieve PDP scores by id](/api/product-details/getPdpById): Returns the current scores and processing state for a PDP submitted via [Submit a PDP by id](/api/product-details/upsertPdpById).
+  - [Submit a PDP by id](/api/product-details/upsertPdpById): Submitting a PDP by id sends its hero and carousel images for scoring.
+  - [Retrieve PDP scores by ASIN](/api/product-details/getPdpByAsin): Returns the current scores and processing state for a PDP submitted via [Submit a PDP by ASIN](/api/product-details/upsertPdpByAsin).
+  - [Submit a PDP by Amazon ASIN](/api/product-details/upsertPdpByAsin): Submitting an ASIN runs Vizit's standard Amazon scrape-and-score pipeline server-side: ASIN lookup and validation, category inference with ICP check, retailer scrape, image ingest, and scoring.
+- Exports: Create and poll asynchronous bulk export jobs for PDP and image scores, then download their CSV artifacts.
+  - [Create a bulk export job](/api/exports/createExport): Queues an asynchronous bulk export for the caller's organization.
+  - [Retrieve an export](/api/exports/getExport): Returns the current status of an export job.
+  - [Download an export artifact](/api/exports/downloadExport): Streams the CSV artifact for a `COMPLETED` export.
+- Images: Submit standalone images for asynchronous scoring and poll for their results.
+  - [Submit an image for scoring](/api/images/scoreImage): Submits a standalone image for asynchronous scoring.
+  - [Retrieve an image score](/api/images/getImageScore): Returns the current scoring state of an image previously sent to [Submit an image for scoring](/api/images/scoreImage).
+- Spark Ideas: Request Spark Ideas (written suggestions for a root image) and poll for their results.
+  - [Request a Spark Idea](/api/spark-ideas/createSparkIdea): Queues a Spark Idea for the image and returns immediately with `status: PROCESSING` — a fresh request starts in flight, and an idempotent reuse only ever matches an in-flight Idea.
+  - [Retrieve a Spark Idea](/api/spark-ideas/getSparkIdea): Returns the current state of a Spark Idea.
+- Spark Images: Request Spark Images (generated image variations for a root image) and poll for their results.
+  - [Request a Spark Images batch](/api/spark-images/createSparkImagesBatch): Queues a Spark Images batch for the image and returns immediately with `status: PROCESSING` — a fresh request starts in flight, and an idempotent reuse only ever matches an in-flight batch.
+  - [Retrieve a Spark Images batch](/api/spark-images/getSparkImagesBatch): Returns the current state of a Spark Images batch.

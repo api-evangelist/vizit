@@ -1,0 +1,114 @@
+generated: '2026-08-02'
+method: searched
+source: https://docs.vizit.com/api
+description: 'Entity-relationship graph for the Vizit Public API, transcribed from the
+  published operation reference (request bodies, response schemas and CSV export column
+  sets). No downloadable OpenAPI document is served, so relationships were read from the
+  provider''s documented field semantics rather than parsed from spec $refs.'
+entities:
+- name: Organization
+  description: The tenant every call is scoped to. Org scope is enforced by the access
+    token; cross-org reads are returned as 404 rather than 403 so existence is never leaked.
+  identifier: Auth0 organization ID issued during onboarding
+  api_exposed: false
+- name: Portfolio
+  description: A grouping of PDPs inside an organization. Every organization has a default
+    portfolio; an org without one gets NO_DEFAULT_PORTFOLIO.
+  identifier: portfolio_id (uuid)
+  api_exposed: filter and export column only
+- name: ProductCategory
+  description: A Vizit product category the organization has ICP (ideal customer profile)
+    access to. Used as product_category_id when submitting PDPs and images.
+  identifier: id (uuid)
+  fields: [id, category_name, path]
+  operations: [listProductCategories]
+- name: RetailerRegion
+  description: A supported retailer storefront region (e.g. amazon_us, walmart_us) used to
+    scope category discovery and PDP submission.
+  identifier: id (string)
+  fields: [id, retailer, region, display_name, domain]
+  operations: [listProductRetailers]
+- name: PDP
+  description: A Product Detail Page — one listing, ingested either by Amazon ASIN or by a
+    caller-supplied id, carrying a hero image plus an ordered carousel and the resulting
+    listing scores.
+  identifier: pdp_id (uuid), addressed by {id, retailer} or {asin, region}
+  key_fields: [pdp_score, listing_score_at_ingest, score_change, vizit_certified,
+    carousel_score, asset_mix, images_matching_ideal_mix, is_ideal_content_mix,
+    score_penalty, image_count_penalty, image_mix_penalty, image_order_penalty,
+    high_scoring_asset_count, status, scored_at]
+  operations: [upsertPdpById, getPdpById, upsertPdpByAsin, getPdpByAsin]
+- name: Image
+  description: A scored image — either the hero or a positioned carousel member of a PDP,
+    or a standalone image submitted directly for scoring.
+  identifier: image_id (uuid)
+  key_fields: [image_url, position, image_type, vizit_score, raw_score, hero_score,
+    vizit_certified, classification, agent_ready, mobile_ready, status, scored_at]
+  operations: [scoreImage, getImageScore]
+- name: HeroGS1Components
+  description: Per-component GS1 hero sub-scores and their PASS/REVIEW/FAIL (or
+    HIGH/MEDIUM/LOW) status labels, plus the group roll-ups shopper_clarity, image_quality,
+    composition and product_staging. Populated for hero images only.
+  identifier: embedded in the image score response
+  operations: [scoreImage, getImageScore]
+- name: SparkIdea
+  description: A generative written suggestion for improving a root image, requested
+    asynchronously and polled to a terminal state.
+  identifier: idea_id
+  key_fields: [status, data, created_at]
+  operations: [createSparkIdea, getSparkIdea]
+- name: SparkImagesBatch
+  description: A batch of generated image variations for a root image; on completion it
+    exposes the visible children, each with a short-lived pre-signed download URL.
+  identifier: batch_id
+  key_fields: [status, created_at]
+  operations: [createSparkImagesBatch, getSparkImagesBatch]
+- name: Export
+  description: An asynchronous bulk CSV export job over the organization's PDP or image
+    scores, retained for 7 days after completion.
+  identifier: export_id (uuid)
+  key_fields: [subject, status, requested_at, completed_at, row_count, byte_size,
+    download_url, download_url_expires_at, expires_at, error_code]
+  operations: [createExport, getExport, downloadExport]
+relationships:
+- {from: Organization, to: Portfolio, type: has_many, via: portfolio_id}
+- {from: Organization, to: ProductCategory, type: has_many, via: ICP access}
+- {from: Organization, to: Export, type: has_many, via: access token org scope}
+- {from: Portfolio, to: PDP, type: has_many, via: portfolio_id}
+- {from: PDP, to: Portfolio, type: belongs_to, via: portfolio_id}
+- {from: PDP, to: ProductCategory, type: belongs_to, via: product_category_id or
+    external_category_id}
+- {from: PDP, to: RetailerRegion, type: belongs_to, via: retailer / retailer_region}
+- {from: PDP, to: Image, type: has_one, via: hero}
+- {from: PDP, to: Image, type: has_many, via: carousel_images (ordered by position)}
+- {from: Image, to: PDP, type: belongs_to, via: pdp_id}
+- {from: Image, to: ProductCategory, type: belongs_to, via: product_category_id}
+- {from: Image, to: HeroGS1Components, type: has_one, via: hero_gs1_components (hero only)}
+- {from: Image, to: SparkIdea, type: has_many, via: image_id (root images only)}
+- {from: Image, to: SparkImagesBatch, type: has_many, via: image_id (root images only)}
+- {from: SparkIdea, to: PDP, type: belongs_to, via: pdp_id (nullable)}
+- {from: SparkImagesBatch, to: Image, type: has_many, via: generated child images}
+id_conventions:
+  uuid_identifiers: [pdp_id, image_id, portfolio_id, product_category_id, export_id]
+  caller_supplied_identifiers: [id (PDP by id), external_category_id, integration_id,
+    hero_image_asset_id, carousel_image_asset_ids]
+  natural_keys: [asin + region, id + retailer]
+  request_correlation: request_id (ULID)
+enums:
+  status: [PROCESSING, COMPLETED, ERROR]
+  score_status: [CREATED, PROCESSING, SCORED, CATEGORY_NOT_FOUND]
+  image_type: [hero, carousel]
+  export_subject: [pdps, images]
+  component_status: [PASS, REVIEW, FAIL]
+  band_status: [HIGH, MEDIUM, LOW]
+score_semantics:
+  scale: 0-100
+  vizit_certified_threshold: 80
+  agent_ready_rule: Every shopper-clarity component of hero_gs1_components (four_ws.brand,
+    four_ws.product_type, four_ws.variant, four_ws.size_and_count) scores 90 or above.
+  mobile_ready_rule: Same shopper-clarity rule as agent_ready.
+x-evidence:
+  fetched: '2026-08-02'
+  urls:
+  - {url: 'https://docs.vizit.com/api', http_status: 200}
+  - {url: 'https://docs.vizit.com/llms-full.txt', http_status: 200}

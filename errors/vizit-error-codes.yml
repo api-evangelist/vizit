@@ -1,0 +1,256 @@
+generated: '2026-08-02'
+method: searched
+source: https://docs.vizit.com/standards/errors
+docs: https://docs.vizit.com/standards/errors
+format: proprietary-json
+format_note: 'Vizit does not use RFC 9457 application/problem+json. Every non-2xx response
+  from a protected /v1/* endpoint returns a flat application/json object. Two envelope
+  shapes are published: the standards page documents code/message/status/request_id/docs_url/details,
+  while the per-operation reference documents detail/status_code/error_code/request_id/extra/timestamp.
+  Both are transcribed below exactly as published — the divergence is the provider''s, not ours.'
+envelopes:
+- name: standards-page envelope
+  source: https://docs.vizit.com/standards/errors
+  fields:
+  - {field: code, type: string, required: true, description: 'Stable, documented, SCREAMING_SNAKE_CASE
+      machine-readable error code. Branch on this field, not on message.'}
+  - {field: message, type: string, required: true, description: Human-readable explanation,
+      safe to display to end users. May be reworded between releases.}
+  - {field: status, type: integer, required: true, description: Mirrors the HTTP status code.}
+  - {field: request_id, type: string (ULID), required: true, description: Unique request
+      identifier, also returned in the X-Request-Id response header.}
+  - {field: docs_url, type: string, required: false, description: Deep link to the relevant
+      error code in the public docs.}
+  - {field: details, type: array<object>, required: false, description: 'Present for 422
+      validation errors and any response with multiple sub-issues; each element is {field,
+      issue}.'}
+- name: operation-reference envelope
+  source: https://docs.vizit.com/api
+  fields:
+  - {field: detail, type: string, description: Human-readable error message.}
+  - {field: status_code, type: integer, description: HTTP status code.}
+  - {field: error_code, type: string, description: Stable machine-readable error code.}
+  - {field: request_id, type: string, description: Request identifier for correlation.}
+  - {field: extra, type: object, description: 'Endpoint-specific additional context. For
+      example IMAGE_DOWNLOAD_FAILED populates extra.failed_urls with per-URL failure
+      reasons so clients can triage bulk submissions.'}
+  - {field: timestamp, type: string}
+headers:
+- header: X-Request-Id
+  when: always
+  description: Request identifier for this response. If the client sends one on the request
+    it is echoed back; otherwise Vizit generates one.
+- header: Retry-After
+  when: 429 and sometimes 503
+  description: Number of seconds to wait before retrying.
+status_codes:
+- {status: 200, meaning: OK, description: The request succeeded.}
+- {status: 202, meaning: Accepted, description: The request was accepted for asynchronous
+    processing.}
+- {status: 400, meaning: Bad Request, description: The request was malformed or failed a
+    request-level rule.}
+- {status: 401, meaning: Unauthorized, description: The request did not include valid
+    authentication credentials.}
+- {status: 403, meaning: Forbidden, description: The caller is authenticated but not permitted
+    to perform the operation.}
+- {status: 404, meaning: Not Found, description: The resource does not exist or is not
+    visible to this caller.}
+- {status: 409, meaning: Conflict, description: The request conflicts with the current state
+    of the resource.}
+- {status: 413, meaning: Payload Too Large, description: 'Documented on upsertPdpById: more
+    than 20 carousel images.'}
+- {status: 422, meaning: Unprocessable Entity, description: The request failed schema or
+    field-level validation.}
+- {status: 429, meaning: Too Many Requests, description: The caller exceeded the rate limit.}
+- {status: 500, meaning: Internal Server Error, description: An unexpected server-side error
+    occurred.}
+- {status: 502, meaning: Bad Gateway, description: A dependency returned an invalid response.}
+- {status: 503, meaning: Service Unavailable, description: The API is temporarily unavailable.}
+- {status: 504, meaning: Gateway Timeout, description: A dependency did not respond in time.}
+error_codes:
+- code: INVALID_REQUEST
+  status: 400
+  meaning: The request could not be processed.
+  area: shared
+- code: VALIDATION_ERROR
+  status: 422
+  meaning: Request body or field-level validation failed; details carries per-field issues.
+  area: shared
+- code: INVALID_ID
+  status: 400
+  meaning: id is empty or longer than 512 characters.
+  area: product-details
+  operations: [getPdpById, upsertPdpById]
+- code: INVALID_RETAILER
+  status: 400
+  meaning: retailer is not in retailer_regions.
+  area: product-details
+  operations: [getPdpById, upsertPdpById, listProductCategories]
+- code: NO_DEFAULT_PORTFOLIO
+  status: 400
+  meaning: The organization has no default portfolio.
+  area: product-details
+  operations: [upsertPdpById, scoreImage]
+- code: CATEGORY_NOT_FOUND
+  status: 400
+  meaning: The supplied product_category_id does not exist or is outside the organization's ICP.
+  area: product-details
+  operations: [upsertPdpById]
+- code: EXTERNAL_CATEGORY_UNMAPPED
+  status: 400
+  meaning: The supplied external_category_id could not be mapped to a Vizit category.
+  area: product-details
+  operations: [upsertPdpById]
+- code: CATEGORY_UNRESOLVED
+  status: 400
+  meaning: No category was supplied and none could be inferred from gtin, asin, or name.
+  area: product-details
+  operations: [upsertPdpById]
+- code: IMAGE_DOWNLOAD_FAILED
+  status: 400
+  meaning: One or more images could not be downloaded; extra.failed_urls carries the per-URL reason.
+  area: images
+  operations: [upsertPdpById, scoreImage]
+- code: INVALID_ASIN
+  status: 400
+  meaning: ASIN is not 10 uppercase alphanumeric characters.
+  area: product-details
+  operations: [upsertPdpByAsin]
+- code: INVALID_REGION
+  status: 400
+  meaning: region is not a supported Amazon storefront.
+  area: product-details
+  operations: [upsertPdpByAsin, getPdpByAsin]
+- code: CATEGORY_NOT_IN_ORG_ICP
+  status: 400
+  meaning: The scraped or supplied category is outside the caller organization's ICP.
+  area: product-details
+  operations: [upsertPdpByAsin, scoreImage]
+- code: NO_VALID_CATEGORY
+  status: 400
+  meaning: The retailer returned no usable category data.
+  area: product-details
+  operations: [upsertPdpByAsin]
+- code: ASIN_NOT_FOUND_AT_RETAILER
+  status: 404
+  meaning: The ASIN could not be resolved on the storefront.
+  area: product-details
+  operations: [upsertPdpByAsin]
+- code: PDP_NOT_FOUND
+  status: 404
+  meaning: No PDP for this identifier in the caller's organization (also used when the
+    organization has no default portfolio configured).
+  area: product-details
+  operations: [getPdpByAsin, upsertPdpByAsin]
+- code: SCRAPE_UPSTREAM_ERROR
+  status: 502
+  meaning: Retailer scrape failed after retries.
+  area: product-details
+  operations: [upsertPdpByAsin]
+- code: SCRAPE_TIMEOUT
+  status: 504
+  meaning: Retailer scrape timed out after retries.
+  area: product-details
+  operations: [upsertPdpByAsin]
+- code: EMPTY_IMAGE
+  status: 400
+  meaning: The downloaded image body was empty.
+  area: images
+  operations: [scoreImage]
+- code: IMAGE_OMITTED_FROM_SCORING
+  status: 200
+  meaning: The carousel image classified as an informational asset type, which Vizit does
+    not score. Reported on the image record, not as an HTTP error.
+  area: images
+  operations: [scoreImage, getImageScore]
+- code: IMAGE_NOT_FOUND
+  status: 404
+  meaning: The image does not exist in the caller's organization (also returned when it
+    belongs to a different organization, so cross-org existence is never leaked).
+  area: spark
+  operations: [createSparkIdea, getSparkIdea, createSparkImagesBatch, getSparkImagesBatch]
+- code: GENERATED_IMAGE_NOT_ALLOWED
+  status: 400
+  meaning: The image is itself Spark-generated; only root images may seed Spark.
+  area: spark
+  operations: [createSparkIdea, createSparkImagesBatch]
+- code: MISSING_PRODUCT_CATEGORY
+  status: 400
+  meaning: The image has no product_category_id assigned.
+  area: spark
+  operations: [createSparkIdea, createSparkImagesBatch]
+- code: IDEA_NOT_FOUND
+  status: 404
+  meaning: The Spark Idea does not exist or is not linked to this image.
+  area: spark
+  operations: [getSparkIdea]
+- code: SQS_ENQUEUE_FAILED
+  status: 500
+  meaning: Failed to enqueue the request for processing; the record is marked ERROR before
+    the error is raised.
+  area: spark
+  operations: [createSparkIdea]
+- code: INVALID_SUBJECT
+  status: 400
+  meaning: subject is not pdps or images.
+  area: exports
+  operations: [createExport]
+- code: INVALID_FILTER
+  status: 400
+  meaning: The request contains an unknown filter key.
+  area: exports
+  operations: [createExport]
+- code: INVALID_TIMESTAMP
+  status: 400
+  meaning: last_refreshed_after is not a valid RFC 3339 timestamp.
+  area: exports
+  operations: [createExport]
+- code: INVALID_RETAILER_REGION
+  status: 400
+  meaning: retailer_region is not in the configured set.
+  area: exports
+  operations: [createExport]
+- code: PORTFOLIO_NOT_FOUND
+  status: 404
+  meaning: portfolio_id does not belong to the caller's organization. 404 rather than 403
+    so cross-org existence is not leaked.
+  area: exports
+  operations: [createExport]
+- code: EXPORT_CONCURRENCY_LIMIT
+  status: 409
+  meaning: The caller already has an export in PROCESSING. One in-flight export per organization.
+  area: exports
+  operations: [createExport]
+- code: EXPORT_NOT_FOUND
+  status: 404
+  meaning: The export does not exist in the caller's organization.
+  area: exports
+  operations: [getExport, downloadExport]
+- code: EXPORT_NOT_READY
+  status: 404
+  meaning: The export exists but status is still PROCESSING.
+  area: exports
+  operations: [downloadExport]
+- code: EXPORT_EXPIRED
+  status: 404
+  meaning: The artifact has been purged past its 7-day retention.
+  area: exports
+  operations: [getExport, downloadExport]
+- code: EXPORT_FAILED
+  status: 200
+  meaning: The export worker hit an unrecoverable failure; reported on the job record with
+    status ERROR.
+  area: exports
+  operations: [getExport]
+client_guidance:
+- Branch on the error code, never on the message.
+- Retry 429 and 5xx responses with exponential backoff (start around 5s, double each retry,
+  cap around 60s).
+- Do not retry other 4xx responses until the request has been fixed.
+- When contacting support, include request_id and the UTC time of the request.
+- Error codes are part of the /v1/* contract; new codes may be added over time.
+x-evidence:
+  fetched: '2026-08-02'
+  urls:
+  - {url: 'https://docs.vizit.com/standards/errors', http_status: 200}
+  - {url: 'https://docs.vizit.com/llms-full.txt', http_status: 200}

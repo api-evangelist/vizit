@@ -1,23 +1,137 @@
 aid: vizit
 name: Vizit
-description: 'Vizit is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: 'Vizit (Vizit Labs, Inc.) is a Boston-based Visual AI company whose platform
+  predicts, measures, optimizes and monitors the effectiveness of ecommerce visual content.
+  Its patented Audience Lens technology decomposes every image into thousands of visual
+  components and scores it against deep-learning models trained to simulate the visual
+  preferences of specific consumer audiences, so brands can tell which hero and carousel
+  images will convert on the digital shelf. The Vizit Public API is a machine-to-machine
+  REST API at ext.vizit.com that lets partners and brands ingest Product Detail Pages
+  by Amazon ASIN or by their own product identifiers, submit standalone images for
+  scoring, retrieve listing and image scores (including GS1 hero sub-scores and the
+  agent-ready / mobile-ready shopper-clarity flags), request Spark Ideas and Spark
+  Images generative variations, and queue bulk CSV exports of an organization''s
+  PDP and image scores.'
+image: https://www.vizit.com/img/logo.svg
 url: https://raw.githubusercontent.com/api-evangelist/vizit/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
 specificationVersion: '0.20'
 created: '2026-08-02'
 modified: '2026-08-02'
 tags:
 - Company
-apis: []
+- Visual AI
+- Ecommerce
+- Digital Shelf
+- Image Analytics
+- Content Effectiveness
+- Retail Media
+- Product Detail Pages
+- Machine Learning
+- Generative AI
+apis:
+- aid: vizit:public-api
+  name: Vizit Public API
+  description: 'Machine-to-machine REST API for ingesting Product Detail Pages (by Amazon
+    ASIN or by caller-supplied id), submitting standalone images for asynchronous Visual
+    AI scoring, retrieving PDP and image scores including GS1 hero component sub-scores,
+    requesting Spark Ideas and Spark Images, and queuing bulk CSV exports of an
+    organization''s scores. Authenticated with OAuth 2.0 client credentials (Auth0
+    organization-scoped) exchanged at POST /auth/token for a 24-hour Bearer token.'
+  humanURL: https://docs.vizit.com/
+  baseURL: https://ext.vizit.com
+  tags:
+  - Visual AI
+  - Ecommerce
+  - Image Scoring
+  - Product Detail Pages
+  - Exports
+  properties:
+  - type: Documentation
+    url: https://docs.vizit.com/
+  - type: APIReference
+    url: https://docs.vizit.com/api
+  - type: GettingStarted
+    url: https://docs.vizit.com/guides/overview
+  - type: Authentication
+    url: https://docs.vizit.com/standards/authentication
+  - type: ErrorCodes
+    url: https://docs.vizit.com/standards/errors
+  - type: Pagination
+    url: https://docs.vizit.com/standards/pagination
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: DomainSecurity
+  url: security/vizit-domain-security.yml
 - type: Website
+  url: https://www.vizit.com/
+- type: DeveloperPortal
+  url: https://docs.vizit.com/
+- type: Documentation
+  url: https://docs.vizit.com/
+- type: APIReference
+  url: https://docs.vizit.com/api
+- type: GettingStarted
+  url: https://docs.vizit.com/guides/overview
+- type: Support
+  url: https://help.vizit.com/
+- type: HelpCenter
+  url: https://help.vizit.com/vizit/directories
+- type: Blog
+  url: https://www.vizit.com/blog
+- type: SignUp
+  url: https://www.vizit.com/demo
+- type: Login
+  url: https://app.vizit.com/
+- type: TermsOfService
+  url: https://www.vizit.com/terms-of-service
+- type: PrivacyPolicy
+  url: https://www.vizit.com/privacy-policy
+- type: StatusPage
+  url: https://status.vizit.com/
+- type: Careers
+  url: https://www.vizit.com/careers
+- type: Press
+  url: https://www.vizit.com/press
+- type: Partners
+  url: https://www.vizit.com/partners
+- type: Company
+  url: https://www.vizit.com/company
+- type: LinkedIn
+  url: https://www.linkedin.com/company/vizitlabs/
+- type: Forge
   url: https://forgeglobal.com/vizit_stock/
+- type: Authentication
+  url: authentication/vizit-authentication.yml
+- type: Conventions
+  url: conventions/vizit-conventions.yml
+- type: Idempotency
+  url: conventions/vizit-conventions.yml
+- type: ErrorCatalog
+  url: errors/vizit-error-codes.yml
+- type: RateLimits
+  url: rate-limits/vizit-rate-limits.yml
+- type: Lifecycle
+  url: lifecycle/vizit-lifecycle.yml
+- type: Sandbox
+  url: sandbox/vizit-sandbox.yml
+- type: Conformance
+  url: conformance/vizit-conformance.yml
+- type: DataModel
+  url: data-model/vizit-data-model.yml
+- type: MCPServer
+  url: mcp/vizit-mcp.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: LLMsTxt
+  url: llms/vizit-llms.txt
+x-enrichment:
+  date: '2026-08-02'
+  status: enriched
+  artifacts_added: 17
+  pass: local-v1

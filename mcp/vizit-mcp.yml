@@ -1,0 +1,72 @@
+generated: '2026-08-02'
+method: derived
+status: candidate
+source: https://docs.vizit.com/api
+notes: 'No official hosted or remote Vizit MCP server was found (docs.vizit.com,
+  www.vizit.com, npm, and the public MCP registries were all checked). The candidate tool
+  list below is derived one-for-one from the sixteen operations Vizit publishes in its
+  own API reference; each source_operation is the operationId as published by the
+  provider. Input schemas would come from that operation''s documented parameters and
+  request body — no OpenAPI document is downloadable, so no inputSchema is asserted here.'
+server:
+  name: vizit
+  transport: http
+  url: null
+  auth: OAuth 2.0 client credentials (Auth0), Bearer JWT on every tool call
+tools:
+- name: createToken
+  description: Exchange machine-to-machine client credentials for a short-lived Bearer token.
+  source_operation: 'POST /auth/token#createToken'
+- name: listProductCategories
+  description: List the product categories the caller's organization has ICP access to.
+  source_operation: 'GET /v1/product-categories#listProductCategories'
+- name: listProductRetailers
+  description: List the retailer regions available for scoping product category discovery.
+  source_operation: 'GET /v1/product-retailers#listProductRetailers'
+- name: upsertPdpById
+  description: Submit or refresh a Product Detail Page under a caller-supplied id, with
+    hero and carousel image URLs.
+  source_operation: 'PUT /v1/pdps/id/{id}#upsertPdpById'
+- name: getPdpById
+  description: Retrieve the current scores and processing state for a PDP submitted by id.
+  source_operation: 'GET /v1/pdps/id/{id}#getPdpById'
+- name: upsertPdpByAsin
+  description: Submit or refresh a Product Detail Page by Amazon ASIN, running Vizit's
+    scrape-and-score pipeline server-side.
+  source_operation: 'PUT /v1/pdps/asin/{asin}#upsertPdpByAsin'
+- name: getPdpByAsin
+  description: Retrieve the current scores and processing state for a PDP submitted by ASIN.
+  source_operation: 'GET /v1/pdps/asin/{asin}#getPdpByAsin'
+- name: scoreImage
+  description: Submit a standalone image for asynchronous Visual AI scoring.
+  source_operation: 'POST /v1/images/score#scoreImage'
+- name: getImageScore
+  description: Retrieve the scoring state of an image, including GS1 hero component
+    sub-scores and the agent-ready / mobile-ready flags.
+  source_operation: 'GET /v1/images/{image_id}/score#getImageScore'
+- name: createSparkIdea
+  description: Request a Spark Idea — a written suggestion for improving a root image.
+  source_operation: 'POST /v1/images/{image_id}/spark/ideas#createSparkIdea'
+- name: getSparkIdea
+  description: Retrieve the current state of a Spark Idea.
+  source_operation: 'GET /v1/images/{image_id}/spark/ideas/{idea_id}#getSparkIdea'
+- name: createSparkImagesBatch
+  description: Request a Spark Images batch — generated image variations for a root image.
+  source_operation: 'POST /v1/images/{image_id}/spark/images#createSparkImagesBatch'
+- name: getSparkImagesBatch
+  description: Retrieve the current state of a Spark Images batch.
+  source_operation: 'GET /v1/images/{image_id}/spark/images/{batch_id}#getSparkImagesBatch'
+- name: createExport
+  description: Queue an asynchronous bulk CSV export of the organization's PDP or image scores.
+  source_operation: 'POST /v1/exports#createExport'
+- name: getExport
+  description: Poll the status of a bulk export job.
+  source_operation: 'GET /v1/exports/{export_id}#getExport'
+- name: downloadExport
+  description: Download the CSV artifact for a completed export.
+  source_operation: 'GET /v1/exports/{export_id}/download#downloadExport'
+x-evidence:
+  fetched: '2026-08-02'
+  urls:
+  - {url: 'https://docs.vizit.com/api', http_status: 200}
+  - {url: 'https://docs.vizit.com/llms.txt', http_status: 200}

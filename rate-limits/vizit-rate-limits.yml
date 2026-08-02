@@ -1,0 +1,82 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+provider: Vizit
+providerId: vizit
+generated: '2026-08-02'
+method: searched
+created: '2026-08-02'
+modified: '2026-08-02'
+tags:
+- Rate Limiting
+- Visual AI
+- Ecommerce
+description: 'Vizit enforces per-organization rate limits at the API gateway. The exact
+  tier is set when Vizit provisions an organization''s credentials and is not published;
+  the docs publish a safe baseline of roughly a dozen submissions per minute per
+  organization unless the customer has been told otherwise. A separate export
+  concurrency cap of one in-flight job per organization is enforced at submission time.'
+sources:
+- https://docs.vizit.com/guides/ingest-a-pdp
+- https://docs.vizit.com/guides/export-scores
+- https://docs.vizit.com/standards/errors
+headers:
+  requestId: X-Request-Id
+  retryAfter: Retry-After
+  remaining: null
+  limit: null
+  reset: null
+responseCodes:
+  throttled: 429
+limits:
+- name: Submissions (documented safe baseline)
+  scope: organization
+  metric: requests_per_minute
+  limit: 12
+  timeFrame: minute
+  published: true
+  exact: false
+  note: 'Docs wording: "treat a dozen submissions per minute per organization as a safe
+    baseline unless you have been told otherwise." The enforced tier is set per
+    organization at provisioning and is not published.'
+- name: Concurrent bulk export jobs
+  scope: organization
+  metric: concurrent_jobs
+  limit: 1
+  timeFrame: concurrent
+  published: true
+  exact: true
+  enforcement: Rejected at submission with 409 EXPORT_CONCURRENCY_LIMIT.
+- name: Carousel images per PDP submission
+  scope: request
+  metric: items_per_request
+  limit: 20
+  timeFrame: request
+  published: true
+  exact: true
+  enforcement: Rejected with 413 when more than 20 carousel images are supplied.
+- name: Maximum image size
+  scope: request
+  metric: megabytes_per_image
+  limit: 25
+  timeFrame: request
+  published: true
+  exact: true
+  enforcement: Image URLs must resolve to jpeg/png/webp of 25 MB or less.
+- name: Pagination page size
+  scope: request
+  metric: items_per_page
+  limit: 100
+  timeFrame: request
+  published: true
+  exact: true
+  note: Default 25, maximum 100, via the limit query parameter.
+retry_guidance:
+- Retry 429 and 5xx responses with exponential backoff — start at roughly 5 seconds, double
+  on each retry, cap at roughly 60 seconds.
+- Honor the Retry-After header on 429 (and sometimes 503) responses.
+- Do not retry other 4xx responses until the underlying request has been fixed.
+x-evidence:
+  fetched: '2026-08-02'
+  urls:
+  - {url: 'https://docs.vizit.com/llms-full.txt', http_status: 200}
+  - {url: 'https://docs.vizit.com/standards/errors', http_status: 200}
