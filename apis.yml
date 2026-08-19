@@ -16,7 +16,7 @@ image: https://www.vizit.com/img/logo.svg
 url: https://raw.githubusercontent.com/api-evangelist/vizit/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:secondary-market
-specificationVersion: '0.20'
+specificationVersion: '0.23'
 created: '2026-08-02'
 modified: '2026-08-02'
 tags:
