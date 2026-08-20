@@ -22,6 +22,17 @@ modified: '2026-08-02'
 tags:
 - Company
 - Visual AI
+- E-Commerce
+- Digital Shelf
+- Image Analytics
+- Content Effectiveness
+- Retail Media
+- Product Detail Pages
+- Machine-Learning
+- Generative AI
+tags_raw:
+- Company
+- Visual AI
 - Ecommerce
 - Digital Shelf
 - Image Analytics
@@ -42,6 +53,12 @@ apis:
   humanURL: https://docs.vizit.com/
   baseURL: https://ext.vizit.com
   tags:
+  - Visual AI
+  - E-Commerce
+  - Image Scoring
+  - Product Detail Pages
+  - Export
+  tags_raw:
   - Visual AI
   - Ecommerce
   - Image Scoring
