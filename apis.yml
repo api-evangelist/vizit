@@ -12,6 +12,17 @@ description: 'Vizit (Vizit Labs, Inc.) is a Boston-based Visual AI company whose
   agent-ready / mobile-ready shopper-clarity flags), request Spark Ideas and Spark
   Images generative variations, and queue bulk CSV exports of an organization''s
   PDP and image scores.'
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://www.vizit.com/img/logo.svg
 url: https://raw.githubusercontent.com/api-evangelist/vizit/refs/heads/main/apis.yml
 x-type: company
