@@ -54,7 +54,7 @@ tags:
 - Content Effectiveness
 - Retail Media
 - Product Detail Pages
-- Machine-Learning
+- Machine Learning
 - Generative AI
 tags_raw:
 - Company
@@ -67,6 +67,7 @@ tags_raw:
 - Product Detail Pages
 - Machine Learning
 - Generative AI
+- Machine-Learning
 apis:
 - aid: vizit:public-api
   name: Vizit Public API
