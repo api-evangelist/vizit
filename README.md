@@ -64,53 +64,105 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Vizit (Vizit Labs, Inc.) is a Boston-based Visual AI company whose platform predicts,
-measures, optimizes and monitors the effectiveness of ecommerce visual content. Its
-patented Audience Lens technology scores product imagery against deep-learning models
-trained to simulate the visual preferences of specific consumer audiences.
+Vizit (Vizit Labs, Inc.) is a Boston-based Visual AI company whose platform predicts, measures, optimizes and monitors the effectiveness of ecommerce visual content. Its patented Audience Lens technology decomposes every image into thousands of visual components and scores it against deep-learning models trained to simulate the visual preferences of specific consumer audiences, so brands can tell which hero and carousel images will convert on the digital shelf. The Vizit Public API is a machine-to-machine REST API at ext.vizit.com that lets partners and brands ingest Product Detail Pages by Amazon ASIN or by their own product identifiers, submit standalone images for scoring, retrieve listing and image scores (including GS1 hero sub-scores and the agent-ready / mobile-ready shopper-clarity flags), request Spark Ideas and Spark Images generative variations, and queue bulk CSV exports of an organization's PDP and image scores.
 
-- Website: https://www.vizit.com/
-- Developer docs: https://docs.vizit.com/
-- API reference: https://docs.vizit.com/api
-- Status: https://status.vizit.com/
-- Help center: https://help.vizit.com/
+**Areas:** Company · Visual AI · E-Commerce · Digital Shelf · Image Analytics · Content Effectiveness · Retail Media · Product Detail Pages · Machine Learning · Generative AI
 
-## Vizit Public API
+## Vizit on APIs.io
 
-Machine-to-machine REST API at `https://ext.vizit.com` (plus `dev1`–`dev5` development
-environments), authenticated with OAuth 2.0 client credentials via Auth0 and a 24-hour
-Bearer JWT. Sixteen published operations across six capabilities: authentication,
-product details (PDP ingest by Amazon ASIN or by caller id), images (standalone scoring
-with GS1 hero sub-scores), Spark Ideas, Spark Images, and bulk CSV exports.
+Everything profiled for Vizit is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/vizit/](https://apis.io/providers/vizit/)** — or go straight to one of the APIs or properties below.
 
-## Artifacts
+### APIs (1)
 
-| Artifact | Path |
+- [Vizit Public API](https://apis.io/apis/vizit/public-api/) — Machine-to-machine REST API for ingesting Product Detail Pages (by Amazon ASIN or by caller-supplied id), submitting standalone images for asynchronous…
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [vizit](https://apis.io/servers/vizit/vizit/)
+
+#### Security (2)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Vizit Authentication](https://apis.io/security/vizit/vizit-authentication/)
+- [Vizit Domain Security](https://apis.io/security/vizit/vizit-domain-security/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Vizit Rate Limits](https://apis.io/rate-limits/vizit/vizit-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://www.vizit.com/)
+- [Documentation](https://docs.vizit.com/)
+- [Getting started](https://docs.vizit.com/guides/overview)
+- [API reference](https://docs.vizit.com/api)
+- [Sign up](https://www.vizit.com/demo)
+- [Support](https://help.vizit.com/)
+- [Blog](https://www.vizit.com/blog)
+- [Terms of service](https://www.vizit.com/terms-of-service)
+- [Privacy policy](https://www.vizit.com/privacy-policy)
+- [Status](https://status.vizit.com/)
+
+## API Evangelist rating
+
+**Kin Score 35.5** — thin · rubric 0.24.0 · scored 2026-10-17
+
+| Facet | Score |
 |---|---|
-| Authentication profile | `authentication/vizit-authentication.yml` |
-| API conventions (incl. idempotency) | `conventions/vizit-conventions.yml` |
-| Error catalog | `errors/vizit-error-codes.yml` |
-| Rate limits | `rate-limits/vizit-rate-limits.yml` |
-| Lifecycle + status page | `lifecycle/vizit-lifecycle.yml` |
-| Sandbox / environments | `sandbox/vizit-sandbox.yml` |
-| Conformance | `conformance/vizit-conformance.yml` |
-| Data model | `data-model/vizit-data-model.yml` |
-| MCP (candidate) | `mcp/vizit-mcp.yml` |
-| Agent skills | `skills/_index.yml` |
-| llms.txt (verbatim) | `llms/vizit-llms.txt` |
-| Well-known probe record | `well-known/vizit-well-known.yml` |
-| Domain security | `security/vizit-domain-security.yml` |
+| Discoverability | 74.1 |
+| Contract quality | 0.0 |
+| Contract governance | 18.2 |
+| Operational transparency | 39.5 |
+| Developer ergonomics | 66.1 |
+| Access clarity | 34.2 |
 
-## Known gaps
+**Agent readiness 12.1** — agent-aware
 
-- **No downloadable OpenAPI.** The docs state the reference is generated from the Vizit
-  Public API OpenAPI specification, but no spec document is retrievable:
-  `/openapi.json`, `/openapi.yaml`, `/swagger.json`, `/docs` and `/redoc` return 401 on
-  `api.vizit.com` and 403 on `ext.vizit.com`, and 404 on `docs.vizit.com`. Publishing the
-  spec at a public URL is the single highest-value fix available to Vizit.
-- No `/.well-known/` surface on any host — no `security.txt`, no OAuth/OIDC discovery
-  document, no API catalog, no A2A agent card.
-- No first-party SDKs or CLI on npm, PyPI or any other registry; no GitHub organization.
-- No dated changelog, no deprecation/sunset policy, no published SLA.
-- No trust center or named compliance certifications; errors are a flat proprietary JSON
-  envelope rather than RFC 9457.
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | — |
+| Agentic Access | — |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | documented (partial credit) |
+| Error Semantics | documented (partial credit) |
+| OpenAPI Examples | — |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+
+**Regulatory alignment 22.7** — AI & Biometrics
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/vizit/](https://apis.io/providers/vizit/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Vizit: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/vizit/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
